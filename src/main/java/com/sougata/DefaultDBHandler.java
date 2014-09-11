@@ -141,14 +141,22 @@ public class DefaultDBHandler implements DBHandler {
             pstmt = connection.prepareStatement(sql);
             for (int i = 0; i < values.length; i++) {
                 Object obj = values[i];
-                if (obj instanceof Integer) {
-                    pstmt.setInt(i + 1, (Integer) obj);
-                }
                 if (obj instanceof String) {
                     pstmt.setString(i + 1, (String) obj);
                 }
+
+                if (obj instanceof Integer) {
+                    pstmt.setInt(i + 1, (Integer) obj);
+                }
+
                 if (obj instanceof Float) {
                     pstmt.setFloat(i + 1, (Float) obj);
+                }
+                if(obj instanceof Double){
+                    pstmt.setDouble(i+1,(Double)obj);
+                }
+                if(obj instanceof Boolean){
+                    pstmt.setBoolean(i+1,(Boolean)obj);
                 }
                 if (obj instanceof java.sql.Date) {
                     java.sql.Date sqlDate = new Date(((java.util.Date) obj).getTime());
@@ -158,7 +166,6 @@ public class DefaultDBHandler implements DBHandler {
             rs = pstmt.executeQuery();
             jsonValue = DBUtil.buildJSON(rs);
 
-            DBUtil.close(pstmt, connection);
         } catch (SQLException ex) {
             throw new DBException(ex);
         } finally {

@@ -6,6 +6,9 @@ import com.google.gson.JsonObject;
 import com.sougata.exception.DBException;
 
 import javax.sql.DataSource;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.sql.*;
 
 /**
@@ -103,30 +106,45 @@ public class DBUtil {
                 for(int i=1;i<=columnCount;i++){
                     String columnName = rsMeta.getColumnName(i);
                     int type = rsMeta.getColumnType(i);
-                    if(type == Types.VARCHAR){
-                        jsonObject.addProperty(columnName,rs.getString(columnName));
+                    switch (type){
+                        case Types.VARCHAR:
+                            jsonObject.addProperty(columnName,rs.getString(columnName));
+                            break;
+                        case Types.NUMERIC:
+                            jsonObject.addProperty(columnName,rs.getDouble(columnName));
+                            break;
+                        case Types.DOUBLE:
+                            jsonObject.addProperty(columnName,rs.getDouble(columnName));
+                            break;
+                        case Types.INTEGER:
+                            jsonObject.addProperty(columnName,rs.getInt(columnName));
+                            break;
+                        case Types.FLOAT:
+                            jsonObject.addProperty(columnName,rs.getFloat(columnName));
+                            break;
+                        case Types.BIGINT:
+                            jsonObject.addProperty(columnName,rs.getDouble(columnName));
+                            break;
+                        case Types.DECIMAL:
+                            jsonObject.addProperty(columnName,rs.getDouble(columnName));
+                            break;
+                        case Types.BOOLEAN:
+                            jsonObject.addProperty(columnName,rs.getBoolean(columnName));
+                            break;
+                        case Types.CHAR:
+                            jsonObject.addProperty(columnName,rs.getString(columnName));
+                            break;
+                        case Types.DATE:
+                            jsonObject.addProperty(columnName,rs.getDate(columnName).toString());
+                            break;
+                        case Types.CLOB:
+                            jsonObject.addProperty(columnName,readClobToString(rs.getClob(columnName)));
+                            break;
+                        default:
+                            jsonObject.addProperty(columnName,rs.getString(columnName));
+                            break;
                     }
-                    if(type == Types.INTEGER){
-                        jsonObject.addProperty(columnName,rs.getInt(columnName));
-                    }
-                    if(type == Types.NUMERIC){
-                        jsonObject.addProperty(columnName,rs.getDouble(columnName));
-                    }
-                    if(type == Types.DOUBLE){
-                        jsonObject.addProperty(columnName,rs.getDouble(columnName));
-                    }
-                    if(type == Types.FLOAT){
-                        jsonObject.addProperty(columnName,rs.getFloat(columnName));
-                    }
-                    if(type == Types.BIGINT){
-                        jsonObject.addProperty(columnName,rs.getDouble(columnName));
-                    }
-                    if(type == Types.DECIMAL){
-                        jsonObject.addProperty(columnName,rs.getDouble(columnName));
-                    }
-                    if(type == Types.DATE){
-                        jsonObject.addProperty(columnName,rs.getDate(columnName).toString());
-                    }
+
 
                 }
                 jsonArray.add(jsonObject);
@@ -138,5 +156,25 @@ public class DBUtil {
             throw new DBException(ex);
         }
         return jsonArray.toString();
+    }
+
+    private static String readClobToString(Clob clob){
+        if(clob == null){
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        try {
+            String line = null;
+            BufferedReader bufferRead  = new BufferedReader(clob.getCharacterStream());
+            while((line=bufferRead.readLine()) != null ) {
+                    sb.append(line);
+            }
+        }catch (SQLException sqe){
+            throw new DBException(sqe);
+        }catch (IOException ioe){
+            throw new DBException(ioe);
+        }
+
+        return sb.toString();
     }
 }
