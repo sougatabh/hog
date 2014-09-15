@@ -92,11 +92,15 @@ public class DBUtil {
 
     public static String buildJSON(ResultSet rs){
         if(rs == null){
-            throw new DBException("No data found in the resultset");
+            System.out.println("Here");
+            return  Util.responseMessage("No data found in the resultset");
+
         }
         JsonArray jsonArray = new JsonArray();
         try {
-
+            if(rs.getRow()<= 0){
+                return  Util.responseMessage("No data found in the resultset");
+            }
             ResultSetMetaData rsMeta = rs.getMetaData();
             int columnCount = rsMeta.getColumnCount();
 
@@ -135,7 +139,11 @@ public class DBUtil {
                             jsonObject.addProperty(columnName,rs.getString(columnName));
                             break;
                         case Types.DATE:
-                            jsonObject.addProperty(columnName,rs.getDate(columnName).toString());
+                            if(rs.getDate(columnName) != null) {
+                                jsonObject.addProperty(columnName, rs.getDate(columnName).toString());
+                            }else{
+                                jsonObject.addProperty(columnName,"");
+                            }
                             break;
                         case Types.CLOB:
                             jsonObject.addProperty(columnName,readClobToString(rs.getClob(columnName)));
@@ -153,7 +161,7 @@ public class DBUtil {
             }
 
         }catch (SQLException ex){
-            throw new DBException(ex);
+            return Util.responseException(ex);
         }
         return jsonArray.toString();
     }

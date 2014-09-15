@@ -70,7 +70,7 @@ public class DBHandlerTest
     public void testRetrieveWithParameter() {
 
         DBHandler _handler = DBHandlerFactory.open(ds);
-        String jsonValue = _handler.retrieve("Select * from emp where id=?", new Integer(1));
+        String jsonValue = _handler.retrieve("Select * from emp where id=?", new Integer(100));
         System.out.println(jsonValue);
         assertNotNull(jsonValue);
 

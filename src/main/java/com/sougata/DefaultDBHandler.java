@@ -128,10 +128,12 @@ public class DefaultDBHandler implements DBHandler {
     @Override
     public String retrieve(String sql, Object... values) {
         if (sql == null) {
-            throw new DBException("Not valid SQL, please check the SQL again");
+
+            return Util.responseMessage("Not valid SQL, please check the SQL again");
         }
         if (values == null) {
-            throw new DBException("No values has been passed");
+
+            return Util.responseMessage("No param values has been passed");
         }
         Connection connection = DBUtil.getConnection(dataSource);
         String jsonValue = null;
