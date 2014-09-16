@@ -17,7 +17,7 @@ Use the following Maven coordinates to include in your project.
     <dependency>
       <groupId>com.sougata</groupId>
       <artifactId>hog</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
+      <version>0.2.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
 ```
