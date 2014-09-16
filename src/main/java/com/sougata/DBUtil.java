@@ -92,20 +92,21 @@ public class DBUtil {
 
     public static String buildJSON(ResultSet rs){
         if(rs == null){
-            System.out.println("Here");
+
             return  Util.responseMessage("No data found in the resultset");
 
         }
         JsonArray jsonArray = new JsonArray();
+        boolean found = false;
         try {
-            if(rs.getRow()<= 0){
-                return  Util.responseMessage("No data found in the resultset");
-            }
+
+
             ResultSetMetaData rsMeta = rs.getMetaData();
             int columnCount = rsMeta.getColumnCount();
 
 
             while (rs.next()) {
+                found = true;
                 JsonObject jsonObject = new JsonObject();
                 for(int i=1;i<=columnCount;i++){
                     String columnName = rsMeta.getColumnName(i);
@@ -162,6 +163,9 @@ public class DBUtil {
 
         }catch (SQLException ex){
             return Util.responseException(ex);
+        }
+        if(!found){
+            return  Util.responseMessage("No data found in the resultset");
         }
         return jsonArray.toString();
     }
